@@ -1,16 +1,17 @@
-const express = require('express')
-const userRouter = require('./routers/user')
-require("dotenv").config()
+const express = require("express");
+const userRouter = require("./routers/user");
+const classroomRouter = require("./routers/classroom");
+require("dotenv").config();
 
-const app = express()
-const port = process.env.PORT | 3000
+const app = express();
+const port = process.env.PORT | 3000;
 
-require('./db/mongoose')
+require("./db/mongoose");
 
-app.use(express.json()) // recognize the incoming Request Object as a JSON Object
-app.use(userRouter)
-
+app.use(express.json()); // recognize the incoming Request Object as a JSON Object
+app.use(userRouter);
+app.use(classroomRouter);
 
 app.listen(port, () => {
-    console.log('server is up on port ' + port)
-})
+  console.log("server is up on port " + port);
+});
