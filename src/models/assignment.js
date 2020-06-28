@@ -49,20 +49,48 @@ const assignmentSchema = new mongoose.Schema({
         ref: 'Classroom'
     },
     format: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'Format'
+        type: String,
+        required: true
     },
     documentType: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'DocumentType'
+        type: String,
+        required: true
     },
     rubric: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'Rubric'
-    }
+    },
+    documentSections: [
+        {
+            name: {
+                type: String,
+                required: true
+            },
+            minExtension: {
+                type: Number
+            },
+            maxExtension: {
+                type: Number
+            }
+        },
+    ],
+    bannedSources: [
+        {
+            source: {
+                type: String,
+                required: true
+            }
+        }
+    ],
+    learningObjectives: [
+        {
+            objective: {
+                type: String,
+                required: true
+            }
+        }
+    ]
 }, {
     timestamps: true
 })
