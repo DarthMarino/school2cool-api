@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 
 const router = new express.Router();
 
+// POST Requests
 // Form to create a classroom.
 router.post("/classrooms/create", auth, async (req, res) => {
   const classroom = new Classroom({
@@ -22,20 +23,45 @@ router.post("/classrooms/create", auth, async (req, res) => {
   }
 });
 
+// Add new student to the classroom.
+router.post("/classrooms/:classroom_id/add_student", auth, async (req, res) => {
+  const classroom_id = req.params.classroom_id;
+  const student_id = { user: req.body.student };
+  const teacher_auth =
+    (await Classroom.find({
+      $or: [{ teacher: req.user._id }, { _id: classroom_id }],
+    })) != [];
+  const already_student =
+    (await Classroom.find({
+      students: { $elemMatch: { $eq: student_id } },
+    })) == [];
+  try {
+    if (teacher_auth && !already_student) {
+      const add_student = await Classroom.updateOne(
+        { _id: classroom_id },
+        { $push: { students: student_id } }
+      );
+      res.status(201).send("Added Student Succesfully.");
+    } else {
+      res.status(201).send("Cannot add student.");
+    }
+  } catch (e) {
+    res.status(400);
+  }
+});
+
+// GET Requests
 // Get all classrooms related to user
 router.get("/classrooms", auth, async (req, res) => {
-  // const classrooms = Classroom.find({
-  //   $or: [{ "teacher._id": req.user._id }, { "student._id": req.user._id }],
-  // });
-  const student = await Classroom.find({
+  const classrooms = await Classroom.find({
     $or: [
       { teacher: req.user._id },
       { students: { $elemMatch: { $eq: req.user._id } } },
     ],
   });
-  console.log(student);
+  console.log(classrooms);
   try {
-    res.status(201).send(classroom);
+    res.status(201).send(classrooms);
   } catch (e) {
     res.status(400);
   }
@@ -43,7 +69,7 @@ router.get("/classrooms", auth, async (req, res) => {
 
 // Returns a list with all students names in the classroom
 router.get("/classrooms/:classroom_id/students", auth, async (req, res) => {
-  const classroom_id = request.params.classroom_id;
+  const classroom_id = req.params.classroom_id;
   const students = await Classroom.find({
     classroom: ObjectId(classroom_id),
   });
