@@ -5,15 +5,19 @@ const evaluationSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
-    date: {
-        type: Date,
-        required: true
-    },
     deliverable: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'Deliverable'
     },
+    evaluativeCriteriaDetail: [
+        {
+            evaluativeCriterionDetail: {
+                type: mongoose.Schema.Types.ObjectId,
+                required: true
+            }
+        }
+    ]
 }, {
     timestamps: true
 })

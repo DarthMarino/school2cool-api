@@ -25,7 +25,29 @@ const rubricSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
-    }
+    },
+    evaluativeCriteria: [
+        {
+            name: {
+                type: String,
+                required: true,
+                trim: true
+            },
+            evaluativeCriteriaDetail: [
+                {
+                    score: {
+                        type: Number,
+                        required: true
+                    },
+                    qualityDefinition:{
+                        type: String,
+                        required: true,
+                        maxlength: 50
+                    }
+                }
+            ]
+        }
+    ]
 }, {
     timestamps: true
 })
