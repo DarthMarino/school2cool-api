@@ -4,9 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --watch src server.js",
-    "start": "nodemon server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -25,5 +23,8 @@
   "devDependencies": {
     "nodemon": "^1.19.4",
     "prettier": "^2.0.5"
+  },
+  "engines": {
+    "node": "12.16.1"
   }
 }

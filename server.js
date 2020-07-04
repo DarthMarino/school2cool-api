@@ -1,14 +1,14 @@
 const express = require("express");
-const userRouter = require("./routers/user");
-const classroomRouter = require("./routers/classroom");
-const rubricRouter = require("./routers/rubric");
-const assignmentRouter = require("./routers/assignment");
+const userRouter = require("./src/routers/user");
+const classroomRouter = require("./src/routers/classroom");
+const rubricRouter = require("./src/routers/rubric");
+const assignmentRouter = require("./src/routers/assignment");
 require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT | 3000;
 
-require("./db/mongoose");
+require("./src/db/mongoose");
 
 app.use(express.json()); // recognize the incoming Request Object as a JSON Object
 app.use(userRouter);
