@@ -53,16 +53,21 @@ router.post("/classrooms/:classroom_id/add_student", auth, async (req, res) => {
 
 // GET Requests
 // Get all classrooms related to user
+// GET /classrooms?teacherOnly=true
 router.get("/classrooms", auth, async (req, res) => {
-  const classrooms = await Classroom.find({
-    $or: [
-      { teacher: req.user._id },
-      { students: { $elemMatch: { $eq: req.user._id } } },
-    ],
-  });
-  console.log(classrooms);
+  let classrooms = []
+  if(req.query.teacherOnly) {
+    classrooms = await Classroom.find({teacher: req.user._id })
+  } else {
+    classrooms = await Classroom.find({
+      $or: [
+        { teacher: req.user._id },
+        { students: { $elemMatch: { user: req.user._id } } },
+      ],
+    });
+  }
   try {
-    res.status(201).send(classrooms);
+    res.status(200).send(classrooms);
   } catch (e) {
     res.status(400);
   }
@@ -75,7 +80,7 @@ router.get("/classrooms/:classroom_id/assignments", auth, async (req, res) => {
     classroom: ObjectId(classroom_id),
   });
   try {
-    res.status(201).send(assignments);
+    res.status(200).send(assignments);
   } catch (e) {
     res.status(400);
   }
@@ -101,7 +106,7 @@ router.get("/classrooms/:classroom_id/students", auth, async (req, res) => {
     )
   );
   try {
-    res.status(201).send(
+    res.status(200).send(
       (await students_list).map(([student]) => {
         return {
           id: student._id,
