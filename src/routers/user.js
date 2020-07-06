@@ -50,4 +50,26 @@ router.post("/users/logout", auth, async (req, res) => {
   }
 });
 
+router.get("/users", async (req, res) => {
+  let students_list = await User.find({}, [
+    "_id",
+    "name",
+    "lastName",
+    "username",
+  ]);
+  try {
+    res.status(201).send(
+      (await students_list).map((user) => {
+        return {
+          id: user._id,
+          name: user.name + " " + user.lastName,
+          userName: user.username,
+        };
+      })
+    );
+  } catch (e) {
+    res.status(400);
+  }
+});
+
 module.exports = router;
