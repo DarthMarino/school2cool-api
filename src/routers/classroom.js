@@ -96,14 +96,18 @@ router.get("/classrooms/:classroom_id/students", auth, async (req, res) => {
         {
           _id: student.user,
         },
-        ["name", "lastName"]
+        ["_id", "name", "lastName", "username"]
       )
     )
   );
   try {
     res.status(201).send(
       (await students_list).map(([student]) => {
-        return { name: student.name, lastName: student.lastName };
+        return {
+          id: student._id,
+          name: student.name + " " + student.lastName,
+          userName: student.lastName,
+        };
       })
     );
   } catch (e) {
