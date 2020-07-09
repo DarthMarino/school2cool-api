@@ -3,8 +3,25 @@ const auth = require("../middleware/auth")
 const mongoose = require("mongoose")
 const multer = require("multer")
 const Deliverable = require("../models/deliverable")
+const moment = require("moment")
+const Assignment = require('../models/assignment')
 
 const router = new express.Router();
+
+const computeMissedPointsDelay = (deliveryDate, dateDelivered, missedPointsDelayPerTimeUnit, delayTimeUnit) => {
+    let delay = 0 
+    if (delayTimeUnit.toUpperCase() === 'MINUTOS') {
+      delay = moment(dateDelivered).diff(moment(deliveryDate), "minutes")
+    } else if (delayTimeUnit.toUpperCase() === 'SEGUNDOS') {
+      delay = moment(dateDelivered).diff(moment(deliveryDate), "seconds")
+    } else if (delayTimeUnit.toUpperCase() === 'HORAS') {
+      delay = moment(dateDelivered).diff(moment(deliveryDate), "hours")
+    }
+    if(delay < 0) {
+      delay = 0
+    }
+    return delay * missedPointsDelayPerTimeUnit
+}
 
 const upload = multer({
   // limits: {
@@ -32,6 +49,14 @@ router.post("/deliverables/assignment/:id", auth, upload.single('file'), async (
       } else {
         deliverable.file = req.file.buffer
       }
+      await deliverable.save()
+      // missedPointDelay computation
+      const assignment = await Assignment.findById(deliverable.assignment)
+      if ( deliverable.createdAt > assignment.deadline ) {
+        throw new Error('Time\'s Up! the assignment is late')
+      }
+      const missedPointsDelay = computeMissedPointsDelay(assignment.deliveryDate, deliverable.createdAt, assignment.missedPointsDelay, assignment.delayTimeUnit)
+      deliverable.missedPointsDelay = missedPointsDelay
       await deliverable.save()
       res.send(deliverable)
     } catch (e) {

@@ -33,6 +33,10 @@ const rubricSchema = new mongoose.Schema({
                 required: true,
                 trim: true
             },
+            weight: {
+                type: Number,
+                required: true
+            },
             evaluativeCriteriaDetail: [
                 {
                     score: {

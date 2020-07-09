@@ -14,6 +14,9 @@ const deliverableSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
+    },
+    missedPointsDelay: {
+        type: Number,
     }
 }, {
     timestamps: true

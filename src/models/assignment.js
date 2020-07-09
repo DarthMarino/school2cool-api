@@ -18,6 +18,9 @@ const assignmentSchema = new mongoose.Schema({
     missedPointsDelay: {
         type: Number,
     },
+    delayTimeUnit: {
+        type: String
+    },
     title: {
         type: String,
         required: true,
