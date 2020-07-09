@@ -5,10 +5,6 @@ const deliverableSchema = new mongoose.Schema({
         type: Buffer,
         required: true,
     },
-    date: {
-        type: Date,
-        required: true
-    },
     assignment: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,

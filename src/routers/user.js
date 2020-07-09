@@ -2,6 +2,9 @@ const express = require("express");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
 const mongoose = require("mongoose");
+const { reset } = require("nodemon");
+const multer = require('multer')
+const sharp = require('sharp')
 
 const router = new express.Router();
 
@@ -36,6 +39,45 @@ router.get("/users/me", auth, async (req, res) => {
     res.status(500).send();
   }
 });
+
+// middleware for uploading a profile picture
+const upload = multer({
+  // limits: {
+  //   fileSize: 1000000
+  // },
+  fileFilter(req, file, cb) {
+      if(!file.originalname.match(/\.(jpg|jpeg|png|)$/)) {
+          return cb(new Error('Please upload an image'))
+      }
+      cb(undefined, true)
+  }
+})
+// save a profile picture for the authenticated user.
+router.post("/users/me/picture", auth, upload.single('picture'), async (req, res) => {
+    try {
+      const buffer = await sharp(req.file.buffer).resize({ width: 250, height:250 }).png().toBuffer()
+      req.user.picture = buffer
+      await req.user.save()
+      res.send(req.user.picture)
+    } catch (e) {
+      res.status(400).send()
+    }
+}, (error, req, res, next) => {
+    res.status(400).send({error: error.message})
+})
+// get a user's profile picture by the user's id
+router.get("/users/:id/picture", auth, async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id)
+      if (!user || !user.picture) {
+        throw new Error()
+      }
+      res.set('Content-Type', 'image/png')
+      res.send(user.picture)
+    } catch (e) {
+      res.status(404).send()
+    }
+})
 
 router.post("/users/logout", auth, async (req, res) => {
   try {

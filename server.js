@@ -3,6 +3,7 @@ const userRouter = require("./src/routers/user");
 const classroomRouter = require("./src/routers/classroom");
 const rubricRouter = require("./src/routers/rubric");
 const assignmentRouter = require("./src/routers/assignment");
+const deliverableRouter = require("./src/routers/deliverable");
 require("dotenv").config();
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(userRouter);
 app.use(classroomRouter);
 app.use(rubricRouter);
 app.use(assignmentRouter);
+app.use(deliverableRouter);
 
 app.listen(port, () => {
   console.log("server is up on port " + port);
