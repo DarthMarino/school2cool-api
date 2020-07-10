@@ -16,6 +16,10 @@ const rubricSchema = new mongoose.Schema({
         required: true,
         default: 0
     },
+    weight: {
+        type:Number,
+        required: true
+    },
     maxScore: {
         type: Number,
         required: true,

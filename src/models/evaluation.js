@@ -20,6 +20,9 @@ const evaluationSchema = new mongoose.Schema({
     ],
     grade: {
         type: Number
+    },
+    finalGrade: {
+        type: Number
     }
 }, {
     timestamps: true

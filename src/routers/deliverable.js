@@ -39,6 +39,7 @@ const upload = multer({
 // the id in the params is the assignment id.
 router.post("/deliverables/assignment/:id", auth, upload.single('file'), async (req, res) => {
   try {
+      updatedDate = new Date() // TODO: get this from the front-end
       let deliverable = await Deliverable.findOne({assignment: req.params.id, student: req.user._id})
       if (!deliverable) {
           deliverable = new Deliverable({
@@ -52,10 +53,10 @@ router.post("/deliverables/assignment/:id", auth, upload.single('file'), async (
       await deliverable.save()
       // missedPointDelay computation
       const assignment = await Assignment.findById(deliverable.assignment)
-      if ( deliverable.createdAt > assignment.deadline ) {
+      if ( updatedDate > assignment.deadline ) {
         throw new Error('Time\'s Up! the assignment is late')
       }
-      const missedPointsDelay = computeMissedPointsDelay(assignment.deliveryDate, deliverable.createdAt, assignment.missedPointsDelay, assignment.delayTimeUnit)
+      const missedPointsDelay = computeMissedPointsDelay(assignment.deliveryDate, updatedDate, assignment.missedPointsDelay, assignment.delayTimeUnit)
       deliverable.missedPointsDelay = missedPointsDelay
       await deliverable.save()
       res.send(deliverable)
