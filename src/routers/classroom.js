@@ -55,9 +55,9 @@ router.post("/classrooms/:classroom_id/add_student", auth, async (req, res) => {
 // Get all classrooms related to user
 // GET /classrooms?teacherOnly=true
 router.get("/classrooms", auth, async (req, res) => {
-  let classrooms = []
-  if(req.query.teacherOnly) {
-    classrooms = await Classroom.find({teacher: req.user._id })
+  let classrooms = [];
+  if (req.query.teacherOnly) {
+    classrooms = await Classroom.find({ teacher: req.user._id });
   } else {
     classrooms = await Classroom.find({
       $or: [
@@ -101,16 +101,21 @@ router.get("/classrooms/:classroom_id/students", auth, async (req, res) => {
         {
           _id: student.user,
         },
-        ["name", "lastName"]
+        ["_id", "name", "lastName", "username"]
       )
     )
   );
+  students_list = (await students_list).map(([student]) => {
+    console.log(student);
+    return {
+      id: student._id,
+      name: student.name + " " + student.lastName,
+      userName: student.username,
+    };
+  });
+  console.log(students_list);
   try {
-    res.status(200).send(
-      (await students_list).map(([student]) => {
-        return { name: student.name, lastName: student.lastName };
-      })
-    );
+    res.status(200).send(students_list);
   } catch (e) {
     res.status(400);
   }
