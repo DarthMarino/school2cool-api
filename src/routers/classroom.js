@@ -20,7 +20,7 @@ router.post("/classrooms/create", auth, async (req, res) => {
     await classroom.save();
     res.status(201).send(classroom);
   } catch (e) {
-    res.status(400);
+    res.status(400).send();
   }
 });
 
@@ -47,7 +47,7 @@ router.post("/classrooms/:classroom_id/add_student", auth, async (req, res) => {
       res.status(201).send("Cannot add student.");
     }
   } catch (e) {
-    res.status(400);
+    res.status(400).send();
   }
 });
 
@@ -69,7 +69,7 @@ router.get("/classrooms", auth, async (req, res) => {
   try {
     res.status(200).send(classrooms);
   } catch (e) {
-    res.status(400);
+    res.status(400).send();
   }
 });
 
@@ -82,7 +82,7 @@ router.get("/classrooms/:classroom_id/assignments", auth, async (req, res) => {
   try {
     res.status(200).send(assignments);
   } catch (e) {
-    res.status(400);
+    res.status(400).send();
   }
 });
 
@@ -117,7 +117,7 @@ router.get("/classrooms/:classroom_id/students", auth, async (req, res) => {
   try {
     res.status(200).send(students_list);
   } catch (e) {
-    res.status(400);
+    res.status(400).send();
   }
 });
 

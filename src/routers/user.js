@@ -14,7 +14,7 @@ router.post("/users/signUp", async (req, res) => {
     await user.save();
     res.status(201).send(user);
   } catch (e) {
-    res.status(400);
+    res.status(400).send();
   }
 });
 
@@ -110,7 +110,7 @@ router.get("/users", async (req, res) => {
       })
     );
   } catch (e) {
-    res.status(400);
+    res.status(400).send();
   }
 });
 
