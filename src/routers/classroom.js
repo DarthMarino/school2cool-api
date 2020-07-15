@@ -67,6 +67,9 @@ router.get("/classrooms", auth, async (req, res) => {
     });
   }
   try {
+    if (!(Array.isArray(classrooms) && classrooms.length)) {
+      return res.status(404).send(classrooms)
+    }
     res.status(200).send(classrooms);
   } catch (e) {
     res.status(400).send();
