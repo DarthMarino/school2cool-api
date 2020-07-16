@@ -3,6 +3,7 @@ const auth = require("../middleware/auth")
 const mongoose = require("mongoose")
 const multer = require("multer")
 const Deliverable = require("../models/deliverable")
+const Evaluation = require("../models/evaluation")
 const moment = require("moment")
 const Assignment = require('../models/assignment')
 
@@ -67,9 +68,10 @@ router.post("/deliverables/assignment/:id", auth, upload.single('file'), async (
     res.status(400).send({error: error.message})
 })
 // get the file in a deliverable by the assignment's and user's id
-router.get("/deliverables/assignment/:id", auth, async (req, res) => {
+router.get("/deliverables/assignment/:id/student", auth, async (req, res) => {
     try {
-      const deliverable = await Deliverable.findOne({assignment: req.params.id, student: req.user._id})
+      const userId = (req.query.studentId && req.query.studentId.length > 4)? req.query.studentId : req.user._id
+      const deliverable = await Deliverable.findOne({assignment: req.params.id, student: userId})
       if (!deliverable || !deliverable.file) {
         throw new Error()
       }
@@ -82,16 +84,17 @@ router.get("/deliverables/assignment/:id", auth, async (req, res) => {
 
 router.get("/deliverables/all/assignment/:id", auth, async (req, res) => {
   try {
-    const deliverable = await Deliverable.find({assignment: req.params.id})
-    if (!deliverable) {
-      return res.status(404).send(deliverable)
+    const deliverables = await Deliverable.find({assignment: req.params.id})
+    if (!(Array.isArray(deliverables) && deliverables.length)) {
+      return res.status(404).send(deliverables)
     }
-    for(let index = 0; index < deliverable.length; index ++) {
-      await deliverable[index].populate('student').execPopulate()
+    const evaluations = [deliverables.length]
+    for(let index = 0; index < deliverables.length; index ++) {
+      await deliverables[index].populate('student').execPopulate()
+      evaluations[index] = await Evaluation.findOne({deliverable: deliverables[index]._id})
     }
-    res.status(200).send(deliverable);
+    res.status(200).send({deliverables, evaluations});
   } catch (e) {
-    console.log(e)
     res.status(404).send()
   }
 })

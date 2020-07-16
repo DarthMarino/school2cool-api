@@ -14,6 +14,11 @@ router.post("/assignments", auth, async (req, res) => {
     // ex: is the user the classroom teacher?
     // ex: did the user create that rubric?
     // dates validations
+    // dates validations
+    if(!(assignment.openingDate < assignment.deliveryDate)
+    || !(assignment.deliveryDate < assignment.deadline)) {
+      throw new Error('Invalid Dates')
+    }
     await assignment.save();
     res.status(201).send(assignment);
   } catch (e) {
@@ -27,6 +32,8 @@ router.get("/assignments/:id", auth, async (req, res) => {
     /// TODO: add logic validations
     // ex: are you allow to access that assignment?
     const assignment = await Assignment.findById(req.params.id)
+    await assignment.populate('classroom').execPopulate()
+    await assignment.populate('rubric').execPopulate()
     if(!assignment) {
       return res.status(404).send();
     }

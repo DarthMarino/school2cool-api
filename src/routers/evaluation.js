@@ -49,10 +49,11 @@ router.post("/evaluations", auth, async (req, res) => {
       res.status(400).send(e);
     }
   });
-
-  router.get("/evaluations/assignment/:id", auth, async (req, res) => {
+  // /evaluations/assignment/:id/student?idStudent=92089402
+  router.get("/evaluations/assignment/:id/student", auth, async (req, res) => {
     try {
-      const deliverable = await Deliverable.findOne({assignment: req.params.id, student: req.user._id})
+      let userId = (req.query.idStudent && req.query.idStudent.length > 4)? req.query.idStudent : req.user._id
+      const deliverable = await Deliverable.findOne({assignment: req.params.id, student: userId})
       if(!deliverable) {
         res.status(404).send(deliverable);
       }
