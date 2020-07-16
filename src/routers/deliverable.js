@@ -80,4 +80,20 @@ router.get("/deliverables/assignment/:id", auth, async (req, res) => {
     }
 })
 
+router.get("/deliverables/all/assignment/:id", auth, async (req, res) => {
+  try {
+    const deliverable = await Deliverable.find({assignment: req.params.id})
+    if (!deliverable) {
+      return res.status(404).send(deliverable)
+    }
+    for(let index = 0; index < deliverable.length; index ++) {
+      await deliverable[index].populate('student').execPopulate()
+    }
+    res.status(200).send(deliverable);
+  } catch (e) {
+    console.log(e)
+    res.status(404).send()
+  }
+})
+
 module.exports = router;

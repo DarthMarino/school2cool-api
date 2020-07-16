@@ -64,6 +64,7 @@ router.get("/assignments", auth, async (req, res) => {
     })
     for(let index = 0; index < assignments.length; index ++) {
        await assignments[index].populate('classroom').execPopulate()
+       await assignments[index].populate('rubric').execPopulate()
     }
     if (!(Array.isArray(assignments) && assignments.length)) {
       return res.status(404).send(assignments)

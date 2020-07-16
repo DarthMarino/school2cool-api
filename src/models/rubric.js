@@ -45,8 +45,7 @@ const rubricSchema = new mongoose.Schema({
                     },
                     qualityDefinition:{
                         type: String,
-                        required: true,
-                        maxlength: 50
+                        required: true
                     }
                 }
             ]

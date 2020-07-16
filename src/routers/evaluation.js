@@ -35,7 +35,7 @@ const computeEvaluationGrade = async (evaluation) => {
     return Math.round(grade)
 }
 
-router.post("/evaluations", async (req, res) => {
+router.post("/evaluations", auth, async (req, res) => {
     try {
       const evaluation = new Evaluation(req.body)
       await evaluation.save()
@@ -50,4 +50,43 @@ router.post("/evaluations", async (req, res) => {
     }
   });
 
+  router.get("/evaluations/assignment/:id", auth, async (req, res) => {
+    try {
+      const deliverable = await Deliverable.findOne({assignment: req.params.id, student: req.user._id})
+      if(!deliverable) {
+        res.status(404).send(deliverable);
+      }
+      const evaluation = await Evaluation.findOne({deliverable: deliverable._id})
+      if(!evaluation) {
+        res.status(404).send(evaluation);
+      }
+      const assignment = await Assignment.findById(req.params.id)
+      const rubric = await Rubric.findById(assignment.rubric)
+      const evaluationData = []
+      rubric.evaluativeCriteria.map((criteria, idxCriteria) => {
+        const evaluativeCriteriaDetail = criteria.evaluativeCriteriaDetail.filter((criteriaDetail) => {
+          return JSON.stringify(criteriaDetail._id) === JSON.stringify(evaluation.evaluativeCriteriaDetail[idxCriteria].evaluativeCriterionDetail)
+        })
+        evaluationData.push({
+          name: criteria.name,
+          weight: criteria.weight,
+          score: evaluativeCriteriaDetail[0].score,
+          qualityDefinition: evaluativeCriteriaDetail[0].qualityDefinition
+        })
+    })
+    const otherEvaluationData = {
+      evaluationDate: evaluation.createdAt, 
+      missedPointsDelay: deliverable.missedPointsDelay,
+      grade: evaluation.grade,
+      finalGrade: evaluation.finalGrade,
+      baseScore: assignment.baseScore,
+      minScore: rubric.minScore,
+      maxScore: rubric.maxScore,
+      comment: evaluation.comment
+    }
+      res.send({ evaluationData, otherEvaluationData })
+    } catch (e) {
+      res.status(400).send(e);
+    }
+  });
 module.exports = router;
